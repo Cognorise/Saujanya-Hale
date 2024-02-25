@@ -1,0 +1,127 @@
+import pandas as pd
+import numpy as np 
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression,Lasso,Ridge
+from sklearn.metrics import mean_squared_error,mean_absolute_error,r2_score
+df = pd.read_csv("/kaggle/input/car-data/CarPrice_Assignment.csv")
+df.head()
+df.columns
+df.shape
+df.info()
+df.describe()
+df.isna().sum()
+l = []
+for c in df.columns:
+if df[c].dtype == 'object':
+        l.append(c)
+print(f"Number of Numerical data:{len(df.columns)-len(l)}\nNumber of Categorical Data:{l en(l)}")
+df.set_index("car_ID",inplace=True)
+def fun(x):
+    return x.split(' ')[0]
+
+ca = df.CarName.apply(fun)
+df.insert(1,"Company Name",ca)
+df.drop("CarName",axis=1,inplace=True)
+df.rename(columns={"Company Name": "CompanyName"},inplace=True)
+df["CompanyName"].unique()
+df.replace(to_replace=['maxda','nissan','porcshce','toyouta','vokswagen','vw'],value=["mazada","Nissan","porsche","toyota","volkswagen","volkswagen"],inplace=True)
+df.CompanyName.unique()
+<div style="color:white;
+            display:fill;
+            border-radius:15px;
+            background-color:black;
+            font-size:100%;
+            font-family:Verdana;
+            letter-spacing:1px">
+    <h2 style='padding: 20px;
+              color:white;
+              text-align:center;'>
+        Data Visualization
+    </h2>
+    </div>
+plt.figure(figsize=(15,8))
+plt.suptitle("Car Price",weight='bold',fontsize=17)
+plt.subplot(1,2,1)
+plt.hist(df.price,bins=10,density=True)
+df.price.plot(kind="kde",color="red")
+plt.subplot(1,2,2)
+ax = plt.boxplot(df.price,sym='*',labels=["Price"],medianprops={"linewidth":2},patch_artist=True)
+plt.text(1.1,np.median(df.price),f"{np.median(df.price):.0f}",verticalalignment = "center")
+plt.ylabel("Range",labelpad=8,weight='bold')
+plt.show()
+df
+df.CompanyName.value_counts().sort_values(ascending=False).plot(kind='barh')
+plt.title("Companies histogram",weight='bold',fontsize=17)
+plt.xlabel("Number of Cars",weight='bold',fontsize=11)
+plt.ylabel("CompanyName",fontsize=11,weight='bold')
+plt.show()
+g = df.groupby("symboling")["price"]
+df.symboling.value_counts()
+plt.figure(figsize=(15,8))
+plt.suptitle("Symboling",weight='bold',fontsize=17)
+plt.subplot(1,2,1)
+ax = df.symboling.value_counts().plot(kind='bar')
+ax.set_xticklabels(df.symboling.value_counts().index,rotation=0)
+for p in ax.patches:
+    ax.annotate(p.get_height(),(p.get_x()+0.25,p.get_height()+0.5),ha='center',va='bottom')
+plt.xlabel("symboling",labelpad=8,fontsize=11)
+plt.ylabel("Number of Cars",labelpad=8,fontsize=11)
+plt.subplot(1,2,2)
+sns.boxplot(x=df.symboling,y=df.price,palette="cool")
+plt.show()
+l[0] = "CompanyName"
+sns.countplot(x=df["CompanyName"])
+plt.xticks(rotation=90)
+plt.show()
+def plot_fun(x,fig):
+    plt.subplot(5,2,fig)
+    sns.countplot(x = df[x],palette=("cool"))
+    plt.title(f"{x} histogram")
+    plt.xlabel(x,fontsize=11)
+    plt.ylabel("Frequency",fontsize=11)
+    plt.subplot(5,2,fig+1)
+    sns.boxplot(x=df[x],y=df["price"],palette="cool")
+    plt.title(f"{x} : Price")
+    plt.xlabel(x)
+    plt.ylabel("Price")
+i = 1
+plt.figure(figsize=(12,30))
+plot_fun("enginetype",1)
+plot_fun('enginelocation', 3)
+plot_fun('cylindernumber', 5)
+plot_fun('fuelsystem', 7)
+plot_fun('drivewheel', 9)
+plt.show()def plot_fun2(x,fig):
+    plt.subplot(2,2,fig)
+    plt.scatter(df[x],df["price"])
+    plt.title(x+" : price")
+    plt.xlabel(x)
+    plt.ylabel("price")
+    
+plt.figure(figsize=(10,8))
+plot_fun2("carlength",1)
+plot_fun2("carwidth",2)
+plot_fun2("carheight",3)
+plot_fun2("curbweight",4)
+plt.tight_layout()
+def pp(x,y,z):
+    sns.pairplot(df,x_vars=[x,y,z],y_vars=["price"],kind='scatter')
+    plt.show()
+
+pp('enginesize', 'boreratio', 'stroke')
+pp('compressionratio', 'horsepower', 'peakrpm')
+pp('wheelbase', 'citympg', 'highwaympg')<div style="color:white;
+            display:fill;
+            border-radius:15px;
+            background-color:black;
+            font-size:100%;
+            font-family:Verdana;
+            letter-spacing:1px">
+    <h2 style='padding: 20px;
+              color:white;
+              text-align:center;'>
+        Modeling
+    </h2>
+    </div>
